@@ -16,7 +16,7 @@ Kosmos est une plateforme de provisionnement d'infrastructure développée par *
 
 ## Architecture
 
-<img width="621" height="544" alt="image" src="https://github.com/user-attachments/assets/33867e60-cdd5-47ba-8b12-dde53bd9f6f1" />
+<img width="656" height="583" alt="image" src="https://github.com/user-attachments/assets/8d42adc6-32c6-4ba0-b212-bc42171f86d0" />
 
 **Kosmos-Front** est l'interface web que l'utilisateur utilise depuis son navigateur. Elle communique avec **Kosmos-API** pour toutes les opérations de gestion, et avec l'**agent desktop** pour les actions qui nécessitent un accès local à la machine (mods, VPN).
 
