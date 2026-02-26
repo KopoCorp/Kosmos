@@ -1,6 +1,6 @@
 # Kosmos
 
-Kosmos est une plateforme de provisionnement d'infrastructure développée par **KopoCorp**. Elle permet de créer et gérer des environnements isolés à la demande : serveurs de jeu, environnements de test ou d'entraînement en cybersécurité (red team / blue team), ou environnements applicatifs éphémères.
+Kosmos est une plateforme de provisionnement d'infrastructure développée par **Kopo**. Elle permet de créer et gérer des environnements isolés à la demande : serveurs de jeu, environnements de test ou d'entraînement en cybersécurité (red team / blue team), ou environnements applicatifs éphémères.
 
 ---
 
@@ -10,7 +10,7 @@ Kosmos est une plateforme de provisionnement d'infrastructure développée par *
 |---|---|
 | [Kosmos-Front](https://github.com/KopoCorp/Kosmos-Front) | Interface web et agent desktop |
 | [Kosmos-API](https://github.com/KopoCorp/Kosmos-API) | Backend, authentification et logique métier |
-| [Kopo-Infra](https://github.com/KopoCorp/Kopo-Proxmox) | Automatisation de l'infrastructure |
+| [Kopo-Infra](https://github.com/KopoCorp/Kopo-Infra) | Automatisation de l'infrastructure |
 
 ---
 
@@ -46,9 +46,9 @@ Backend de la plateforme. Il gère l'authentification, les données et orchestre
 
 ---
 
-## [Kopo-Infra](https://github.com/KopoCorp/Kopo-Proxmox)
+## [Kopo-Infra](https://github.com/KopoCorp/Kopo-Infra)
 
-Couche d'automatisation de l'infrastructure. Elle reçoit les demandes de provisionnement et crée ou supprime les environnements correspondants sur Proxmox VE.
+Couche d'automatisation de l'infrastructure. Elle reçoit les demandes de provisionnement et crée ou supprime les environnements correspondants.
 
 - Création et suppression d'environnements isolés à la demande
 - Secrets gérés via TPM2
@@ -63,7 +63,7 @@ Couche d'automatisation de l'infrastructure. Elle reçoit les demandes de provis
 | Interface web | PHP, JavaScript |
 | Agent desktop | Rust, Tauri, WireGuard |
 | API backend | Python, FastAPI, MariaDB |
-| Infrastructure | Python, Proxmox VE, Nginx |
+| Infrastructure | Python, Nginx |
 
 ---
 
