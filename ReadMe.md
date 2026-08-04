@@ -2,57 +2,108 @@
 
 Kosmos est une plateforme de provisionnement d'infrastructure développée par **Kopo**. Elle permet de créer et gérer des environnements isolés à la demande : serveurs de jeu, environnements de test ou d'entraînement en cybersécurité (red team / blue team), ou environnements applicatifs éphémères.
 
+Un utilisateur ouvre un espace de travail — un **space** —, y crée des serveurs en quelques clics, et installe des packs de mods sur sa propre machine via une application de bureau. Toute l'infrastructure sous-jacente est provisionnée automatiquement.
+
 ---
 
 ## Dépôts de l'écosystème
 
 | Dépôt | Rôle |
 |---|---|
-| [Kosmos-Front](https://github.com/KopoCorp/Kosmos-Front) | Interface web et agent desktop |
-| [Kosmos-API](https://github.com/KopoCorp/Kosmos-API) | Backend, authentification et logique métier |
-| [Kopo-Infra](https://github.com/KopoCorp/Kopo-Infra) | Automatisation de l'infrastructure |
+| [kosmos-front](https://git.kopo/Kopo/kosmos-front) | Interface web — sert aussi d'interface à l'application de bureau |
+| [kosmos-api](https://git.kopo/Kopo/kosmos-api) | Backend : authentification, logique métier, orchestration |
+| [kosmos-agent](https://git.kopo/Kopo/kosmos-agent) | Application de bureau : cœur Rust + coque Electron |
+| [infra-proxmox](https://git.kopo/Kopo/infra-proxmox) | Couche d'infrastructure Kopo — provisionne les environnements |
+
+`infra-proxmox` sert l'ensemble des services Kopo et n'est pas exclusif à Kosmos.
 
 ---
 
 ## Architecture
 
-<img width="656" height="583" alt="image" src="https://github.com/user-attachments/assets/8d42adc6-32c6-4ba0-b212-bc42171f86d0" />
+```mermaid
+flowchart TB
+    subgraph poste["Poste de l'utilisateur"]
+        direction TB
+        NAV["Navigateur"]
+        subgraph agent["Kosmos Agent"]
+            direction TB
+            SHELL["Coque Electron<br/>webview + pont"]
+            CORE["Coeur Rust<br/>service Windows"]
+            SHELL ---|"named pipe<br/>JSON-RPC"| CORE
+        end
+    end
 
-**Kosmos-Front** est l'interface web que l'utilisateur utilise depuis son navigateur. Elle communique avec **Kosmos-API** pour toutes les opérations de gestion, et avec l'**agent desktop** pour les actions qui nécessitent un accès local à la machine (mods, VPN).
+    subgraph plateforme["Plateforme Kosmos"]
+        direction TB
+        FRONT["kosmos-front<br/>PHP"]
+        API["kosmos-api<br/>FastAPI"]
+        FRONT -->|"HTTPS · JWT"| API
+    end
 
-**Kosmos-API** centralise la logique métier, l'authentification et la persistance des données.
+    subgraph donnees["Donnees et artefacts"]
+        direction LR
+        DB[("MariaDB")]
+        REDIS[("Redis")]
+        MINIO[("MinIO")]
+    end
 
-**Kopo-Infra** est la couche d'infrastructure. Il reçoit les demandes de Kosmos-API et provisionne les environnements correspondants. Ce dépôt fait partie de l'infrastructure **Kopo** au sens large et n'est pas exclusif à Kosmos.
+    INFRA["infra-proxmox<br/>API interne"]
+    LXC["Conteneurs LXC<br/>Proxmox"]
+    KC["Keycloak<br/>SSO"]
+
+    NAV --> FRONT
+    SHELL -->|"charge l'interface"| FRONT
+    API --> DB
+    API --> REDIS
+    API --> MINIO
+    API -->|"provisionne"| INFRA
+    API -.->|"OIDC"| KC
+    INFRA --> LXC
+```
+
+**kosmos-front** est l'interface web. Elle ne touche aucune base de données : tout passe par kosmos-api, et le jeton de session reste côté serveur, jamais exposé au navigateur.
+
+**kosmos-api** centralise l'authentification, la logique métier et la persistance. Il orchestre les demandes de provisionnement vers la couche d'infrastructure.
+
+**kosmos-agent** est l'application de bureau. Sa coque Electron charge l'interface web dans une webview et y injecte un pont ; le cœur Rust, installé en service Windows, exécute les opérations locales. Les deux dialoguent par un **named pipe** — le cœur n'ouvre aucun port réseau et ne contacte jamais l'API directement.
 
 ---
 
-## [Kosmos-Front](https://github.com/KopoCorp/Kosmos-Front)
+## Ce que fait la plateforme
 
-<img width="1907" height="935" alt="image" src="https://github.com/user-attachments/assets/4467c607-d09a-4309-8162-7f77104b37a2" />
+<!--
+  CAPTURE D'ÉCRAN À REFAIRE ICI (tableau de bord d'un space).
 
-Interface web et agent desktop de la plateforme.
+  L'ancienne, retirée le 2026-08-01, montrait une interface qui n'existe plus :
+  carte « VPN », action rapide « Gérer VPN » et ligne « Réseau VPN » dans l'état
+  système, alors que le VPN a été entièrement retiré du produit. Le fond illustré
+  ne correspond plus non plus à la charte actuelle.
 
-- **Interface web** — tableau de bord, gestion des serveurs et environnements, installation de mods, gestion du VPN et des paramètres utilisateur.
-- **Agent desktop** — application locale (Windows, Linux, macOS) qui exécute les opérations nécessitant un accès à la machine de l'utilisateur. Il communique avec l'interface web via WebSocket Secure.
+  Elle était par ailleurs hébergée sur le CDN de GitHub
+  (github.com/user-attachments/...), dépendance externe à un compte qu'on
+  n'utilise plus. La remplaçante doit être COMMITÉE DANS CE DÉPÔT, par exemple
+  sous `images/`, et référencée en chemin relatif.
 
----
+  Attention : ce dépôt est PUBLIC. Utiliser un jeu de données de démonstration,
+  pas un space réel (pas de noms d'utilisateurs ni de serveurs de production).
+-->
 
-## [Kosmos-API](https://github.com/KopoCorp/Kosmos-API)
+### Spaces et serveurs de jeu
 
-Backend de la plateforme. Il gère l'authentification, les données et orchestre les demandes vers la couche d'infrastructure.
+Un space regroupe une équipe, ses serveurs et ses packs. On y crée un serveur en choisissant un jeu ; le conteneur est provisionné, démarré, arrêté ou supprimé depuis l'interface. Les rôles déterminent qui peut faire quoi.
 
-- Authentification par token JWT et clés API
-- Gestion des serveurs, des packs de mods et des utilisateurs
+### Packs de mods
 
----
+Une bibliothèque de packs, alimentée par les membres et modérée par les responsables de space. L'installation et le lancement se font par l'application de bureau : elle télécharge les artefacts, vérifie leur intégrité, monte l'instance dans un dossier isolé et lance le jeu modé — sans toucher à l'installation d'origine.
 
-## [Kopo-Infra](https://github.com/KopoCorp/Kopo-Infra)
+### Comptes et accès
 
-Couche d'automatisation de l'infrastructure. Elle reçoit les demandes de provisionnement et crée ou supprime les environnements correspondants.
+Authentification par mot de passe ou **SSO** (OpenID Connect, via un broker Keycloak). Les sessions sont révocables individuellement. Une console d'administration transverse permet de superviser l'ensemble de la plateforme.
 
-- Création et suppression d'environnements isolés à la demande
-- Secrets gérés via TPM2
-- Déploiements CI/CD des services Kopo
+### Mises à jour de l'agent
+
+L'application de bureau se met à jour toute seule, et **chaque mise à jour est signée** : une chaîne Ed25519 relie une clé racine compilée dans l'application au manifeste de la version publiée. Une mise à jour qui n'est pas signée par Kopo est refusée.
 
 ---
 
@@ -60,10 +111,13 @@ Couche d'automatisation de l'infrastructure. Elle reçoit les demandes de provis
 
 | Composant | Technologies |
 |---|---|
-| Interface web | PHP, JavaScript |
-| Agent desktop | Rust, Tauri, WireGuard |
-| API backend | Python, FastAPI, MariaDB |
-| Infrastructure | Python, Nginx |
+| Interface web | PHP 8.3 (MVC maison), JavaScript |
+| Application de bureau | Rust (cœur, service Windows), Electron + TypeScript (coque) |
+| API backend | Python 3.13, FastAPI, MariaDB, Redis, MinIO |
+| Authentification | JWT, Argon2, OpenID Connect (Keycloak) |
+| Infrastructure | Proxmox (LXC), Python, Nginx |
+
+L'application de bureau est distribuée pour **Windows x64**.
 
 ---
 
