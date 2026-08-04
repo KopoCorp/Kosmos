@@ -73,28 +73,9 @@ flowchart TB
 ## Ce que fait la plateforme
 
 <!--
-  CAPTURE D'ÉCRAN À PLACER ICI (tableau de bord d'un space).
-
-  Emplacement attendu : `images/dashboard.png`, commité DANS CE DÉPÔT et
-  référencé en chemin relatif. L'ancienne vivait sur le CDN de GitHub
-  (github.com/user-attachments/...) : dépendance externe à un compte qu'on
-  n'utilise plus.
-
-  Pourquoi l'ancienne a été retirée le 2026-08-01 : elle montrait une carte
-  « VPN », une action rapide « Gérer VPN » et une ligne « Réseau VPN » dans
-  l'état système, alors que la feature VPN a été retirée du produit.
-
-  CE QU'IL FAUT SUR LA NOUVELLE :
-  - un space PEUPLÉ (des serveurs, des conteneurs). Un tableau de bord à zéro
-    partout ne montre rien de ce que fait la plateforme — c'est le principal
-    défaut d'une capture prise sur un space vide ;
-  - l'agent CONNECTÉ, sinon la supervision affiche « Application requise » ;
-  - des données de DÉMONSTRATION : ce dépôt est public, donc pas de vrais noms
-    d'utilisateurs ni de serveurs de production dans le fil d'activité.
-
-  À noter : l'interface expose encore un raccourci « VPN » qui ouvre une modale
-  « bientôt disponible ». Sur une vitrine, mieux vaut cadrer sans lui — ou
-  trancher le sort de cet onglet avant de publier.
+  Pas de capture d'écran : choix assumé. Si on en ajoute une un jour, la commiter
+  DANS ce dépôt (pas sur un CDN tiers, comme l'ancienne), sur un space peuplé et
+  avec des données de démonstration — ce dépôt est public.
 -->
 
 ### Spaces et serveurs de jeu
