@@ -73,20 +73,28 @@ flowchart TB
 ## Ce que fait la plateforme
 
 <!--
-  CAPTURE D'ÉCRAN À REFAIRE ICI (tableau de bord d'un space).
+  CAPTURE D'ÉCRAN À PLACER ICI (tableau de bord d'un space).
 
-  L'ancienne, retirée le 2026-08-01, montrait une interface qui n'existe plus :
-  carte « VPN », action rapide « Gérer VPN » et ligne « Réseau VPN » dans l'état
-  système, alors que le VPN a été entièrement retiré du produit. Le fond illustré
-  ne correspond plus non plus à la charte actuelle.
+  Emplacement attendu : `images/dashboard.png`, commité DANS CE DÉPÔT et
+  référencé en chemin relatif. L'ancienne vivait sur le CDN de GitHub
+  (github.com/user-attachments/...) : dépendance externe à un compte qu'on
+  n'utilise plus.
 
-  Elle était par ailleurs hébergée sur le CDN de GitHub
-  (github.com/user-attachments/...), dépendance externe à un compte qu'on
-  n'utilise plus. La remplaçante doit être COMMITÉE DANS CE DÉPÔT, par exemple
-  sous `images/`, et référencée en chemin relatif.
+  Pourquoi l'ancienne a été retirée le 2026-08-01 : elle montrait une carte
+  « VPN », une action rapide « Gérer VPN » et une ligne « Réseau VPN » dans
+  l'état système, alors que la feature VPN a été retirée du produit.
 
-  Attention : ce dépôt est PUBLIC. Utiliser un jeu de données de démonstration,
-  pas un space réel (pas de noms d'utilisateurs ni de serveurs de production).
+  CE QU'IL FAUT SUR LA NOUVELLE :
+  - un space PEUPLÉ (des serveurs, des conteneurs). Un tableau de bord à zéro
+    partout ne montre rien de ce que fait la plateforme — c'est le principal
+    défaut d'une capture prise sur un space vide ;
+  - l'agent CONNECTÉ, sinon la supervision affiche « Application requise » ;
+  - des données de DÉMONSTRATION : ce dépôt est public, donc pas de vrais noms
+    d'utilisateurs ni de serveurs de production dans le fil d'activité.
+
+  À noter : l'interface expose encore un raccourci « VPN » qui ouvre une modale
+  « bientôt disponible ». Sur une vitrine, mieux vaut cadrer sans lui — ou
+  trancher le sort de cet onglet avant de publier.
 -->
 
 ### Spaces et serveurs de jeu
